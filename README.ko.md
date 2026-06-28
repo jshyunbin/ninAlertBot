@@ -144,3 +144,16 @@ internal/notifier 디스코드 웹훅 클라이언트 + 메시지 포맷팅
 internal/monitor  스케줄러, 상태 전환, 중복 제거
 internal/state    마지막 상태 JSON 영속화
 ```
+
+## 릴리스 배포
+
+`release.sh`는 모든 플랫폼을 빌드하고 zip으로 패키징(실행 파일 + 두 README +
+예제 설정)한 뒤, 버전 태그를 만들고 푸시하여 GitHub 릴리스를 게시합니다:
+
+```bash
+./release.sh v0.3.0             # 전체 릴리스 (깨끗한 main + gh 인증 필요)
+./release.sh v0.3.0 --dry-run   # dist/에 빌드·패키징만; 태그·게시 안 함
+```
+
+먼저 `go vet`과 테스트를 실행하며, 깨끗하고 최신 상태인 `main`이 아니거나 태그가
+이미 존재하면 진행하지 않습니다.

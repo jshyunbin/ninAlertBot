@@ -141,3 +141,16 @@ internal/notifier Discord webhook client + message formatting
 internal/monitor  scheduler, state transitions, dedup
 internal/state    JSON persistence of last-known status
 ```
+
+## Cutting a release
+
+`release.sh` builds all platforms, packages the zips (binary + both READMEs +
+example config), tags the version, pushes it, and publishes a GitHub release:
+
+```bash
+./release.sh v0.3.0             # full release (requires clean main + authenticated gh)
+./release.sh v0.3.0 --dry-run   # build + package into dist/ only; no tag or publish
+```
+
+It runs `go vet` + tests first and refuses to proceed unless you're on a clean,
+up-to-date `main` and the tag doesn't already exist.
