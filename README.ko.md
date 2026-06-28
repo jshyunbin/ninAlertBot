@@ -65,7 +65,9 @@ GOOS=windows GOARCH=amd64 go build -o ninalertbot.exe ./cmd/ninalertbot   # Wind
 
 ## 업데이트
 
-`apt`처럼, 최신 GitHub 릴리스로 실행 파일을 직접 자가 업데이트합니다:
+최신 GitHub 릴리스로 실행 파일을 직접 자가 업데이트할 수 있으며, 업데이트는
+수동으로 트리거합니다. 봇이 실행될 때 새 릴리스가 있으면 업데이트를 권하는 한 줄
+알림을 로그에 남깁니다.
 
 ```bash
 ./ninalertbot -version        # 현재 버전 표시

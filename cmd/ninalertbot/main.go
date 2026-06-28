@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/jshyunbin/ninalertbot/internal/config"
 	"github.com/jshyunbin/ninalertbot/internal/monitor"
@@ -95,7 +96,26 @@ func runUpdate() error {
 	return nil
 }
 
+// notifyIfUpdateAvailable does a best-effort, short-timeout check for a newer
+// release and logs a notice. It never blocks startup meaningfully or fails the
+// run if GitHub is unreachable.
+func notifyIfUpdateAvailable(log *slog.Logger) {
+	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	defer cancel()
+	res, err := updater.New(version).Check(ctx)
+	if err != nil {
+		log.Debug("update check skipped", "err", err)
+		return
+	}
+	if res.HasUpdate {
+		log.Warn(fmt.Sprintf("a new version is available (%s → %s) — run `ninalertbot -update` to update",
+			res.Current, res.Latest), "url", res.URL)
+	}
+}
+
 func run(configPath, statePath string, checkOnce bool, log *slog.Logger) error {
+	notifyIfUpdateAvailable(log)
+
 	cfg, err := config.Load(configPath)
 	if err != nil {
 		return fmt.Errorf("load config: %w", err)

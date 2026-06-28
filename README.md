@@ -62,7 +62,9 @@ GOOS=windows GOARCH=amd64 go build -o ninalertbot.exe ./cmd/ninalertbot   # Wind
 
 ## Updating
 
-Self-update from the latest GitHub release, in place — like `apt`:
+Manually trigger a self-update from the latest GitHub release, in place. When
+the bot runs and a newer release exists, it logs a one-line notice telling you
+to update.
 
 ```bash
 ./ninalertbot -version        # show current version
