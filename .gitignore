@@ -8,6 +8,11 @@
 /state.json
 /state.json.tmp
 
+# Local debug files (may contain a real webhook URL)
+/config.debug.yaml
+/state.debug.json
+/state.debug.json.tmp
+
 # Claude Code workspace
 .claude/
 
