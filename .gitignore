@@ -1,0 +1,15 @@
+# Build output
+/ninalertbot
+/ninalertbot.exe
+/dist/
+
+# Local runtime files
+/config.yaml
+/state.json
+/state.json.tmp
+
+# Claude Code workspace
+.claude/
+
+# OS noise
+.DS_Store

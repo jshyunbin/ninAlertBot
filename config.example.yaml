@@ -1,0 +1,33 @@
+# ninAlertBot configuration. Copy to config.yaml and edit.
+
+# Required. Create one in your Discord channel:
+#   Server Settings -> Integrations -> Webhooks -> New Webhook -> Copy Webhook URL
+discord_webhook_url: "https://discord.com/api/webhooks/XXXXXXXX/YYYYYYYY"
+
+# Poll cadence (jittered ±20%). Minimum 10s. 60s is polite and plenty fast.
+interval: 60s
+
+# Optional. Prepended to every alert so it pings you.
+#   "@here"  -> everyone currently online
+#   "@everyone"
+#   "<@123456789012345678>"        -> a specific user ID
+#   "<@&123456789012345678>"       -> a specific role ID
+mention: "@here"
+
+# Optional. If a product stays available, re-ping after this long. 0 = alert
+# only once per restock (recommended).
+renotify_after: 0s
+
+# Optional. If the store page layout changes and a product's stock can no longer
+# be read, send one diagnostic alert (throttled to once per 6h per product).
+notify_on_scraper_break: true
+
+# The products to watch. Add or remove freely. The slug is the last path segment
+# of the product URL: https://store.nintendo.co.kr/<slug>
+products:
+  - name: "Nintendo Switch 2"
+    slug: "beeskb6aakor"
+  - name: "Nintendo Switch 2 + Pokémon Pokopia Set"
+    slug: "beeskb6nfkor"
+  # - name: "Nintendo Switch 2 + Mario Kart World Set"
+  #   slug: "beeskb6nakor"
