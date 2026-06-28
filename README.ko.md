@@ -63,6 +63,21 @@ GOOS=windows GOARCH=amd64 go build -o ninalertbot.exe ./cmd/ninalertbot   # Wind
 ./ninalertbot -config config.yaml -debug   # 상세 로그
 ```
 
+## 업데이트
+
+`apt`처럼, 최신 GitHub 릴리스로 실행 파일을 직접 자가 업데이트합니다:
+
+```bash
+./ninalertbot -version        # 현재 버전 표시
+./ninalertbot -check-update   # 새 릴리스가 있는지 확인만 (변경 없음)
+./ninalertbot -update         # 최신 버전 다운로드, 체크섬 검증, 실행 파일 교체
+```
+
+`-update`는 플랫폼에 맞는 릴리스 파일을 받아 `SHA256SUMS.txt`로 검증한 뒤 실행
+파일을 교체합니다(실패 시 자동 롤백). 교체 후에는 **봇(또는 Windows 서비스/작업)을
+재시작**해야 새 버전이 적용됩니다. 서비스로 실행 중이라면 파일이 잠기지 않도록 먼저
+서비스를 중지하고 `-update`를 실행한 다음 다시 시작하세요.
+
 ## Windows에서 24시간 상시 구동
 
 ### 방법 A — 작업 스케줄러 (가장 간단)

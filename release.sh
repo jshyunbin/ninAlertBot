@@ -64,7 +64,7 @@ for entry in "${PLATFORMS[@]}"; do
   d="dist/${name}"
   mkdir -p "$d"
   GOOS="$goos" GOARCH="$goarch" CGO_ENABLED=0 \
-    go build -trimpath -ldflags "-s -w" -o "${d}/ninalertbot${ext}" ./cmd/ninalertbot
+    go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o "${d}/ninalertbot${ext}" ./cmd/ninalertbot
   cp README.md README.ko.md config.example.yaml "$d/"
   ( cd dist && zip -q -r "${name}.zip" "${name}" && rm -rf "${name}" )
   echo "   packaged ${name}.zip"

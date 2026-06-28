@@ -60,6 +60,22 @@ GOOS=windows GOARCH=amd64 go build -o ninalertbot.exe ./cmd/ninalertbot   # Wind
 ./ninalertbot -config config.yaml -debug   # verbose logging
 ```
 
+## Updating
+
+Self-update from the latest GitHub release, in place — like `apt`:
+
+```bash
+./ninalertbot -version        # show current version
+./ninalertbot -check-update   # see if a newer release exists (no changes made)
+./ninalertbot -update         # download latest, verify checksum, replace the binary
+```
+
+`-update` downloads the release asset for your platform, verifies it against
+`SHA256SUMS.txt`, and swaps the binary (with automatic rollback on failure).
+**Restart the bot (or its Windows service/task) afterward** to run the new
+version. If you run it as a service, stop the service first so the file isn't
+locked, run `-update`, then start it again.
+
 ## Running 24/7 on Windows
 
 ### Option A — Task Scheduler (simplest)

@@ -16,13 +16,21 @@ import (
 	"github.com/jshyunbin/ninalertbot/internal/notifier"
 	"github.com/jshyunbin/ninalertbot/internal/state"
 	"github.com/jshyunbin/ninalertbot/internal/store"
+	"github.com/jshyunbin/ninalertbot/internal/updater"
 )
+
+// version is the build version, set via -ldflags "-X main.version=vX.Y.Z" by
+// release.sh. Plain `go build` leaves it as "dev".
+var version = "dev"
 
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to config file")
 	statePath := flag.String("state", "state.json", "path to state file")
 	debug := flag.Bool("debug", false, "enable debug logging")
 	checkOnce := flag.Bool("once", false, "check all products once and exit")
+	showVersion := flag.Bool("version", false, "print version and exit")
+	checkUpdate := flag.Bool("check-update", false, "check whether a newer release exists and exit")
+	doUpdate := flag.Bool("update", false, "update to the latest release in place and exit")
 	flag.Parse()
 
 	level := slog.LevelInfo
@@ -31,10 +39,60 @@ func main() {
 	}
 	log := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: level}))
 
+	switch {
+	case *showVersion:
+		fmt.Printf("ninalertbot %s\n", version)
+		return
+	case *checkUpdate:
+		if err := runCheckUpdate(); err != nil {
+			log.Error("check-update failed", "err", err)
+			os.Exit(1)
+		}
+		return
+	case *doUpdate:
+		if err := runUpdate(); err != nil {
+			log.Error("update failed", "err", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	if err := run(*configPath, *statePath, *checkOnce, log); err != nil {
 		log.Error("fatal", "err", err)
 		os.Exit(1)
 	}
+}
+
+func runCheckUpdate() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	res, err := updater.New(version).Check(ctx)
+	if err != nil {
+		return err
+	}
+	if res.HasUpdate {
+		fmt.Printf("update available: %s -> %s\n%s\nrun `ninalertbot -update` to install\n",
+			res.Current, res.Latest, res.URL)
+	} else {
+		fmt.Printf("up to date (%s)\n", res.Current)
+	}
+	return nil
+}
+
+func runUpdate() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	res, err := updater.New(version).Update(ctx, os.Stdout)
+	if err != nil {
+		return err
+	}
+	if !res.HasUpdate {
+		fmt.Printf("already up to date (%s)\n", res.Current)
+		return nil
+	}
+	fmt.Printf("updated %s -> %s. Restart ninAlertBot (or its service) to run the new version.\n",
+		res.Current, res.Latest)
+	return nil
 }
 
 func run(configPath, statePath string, checkOnce bool, log *slog.Logger) error {
