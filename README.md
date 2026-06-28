@@ -1,5 +1,7 @@
 # ninAlertBot
 
+**English** | [한국어](README.ko.md)
+
 A tiny background service that watches the **Nintendo Korea store**
 (`store.nintendo.co.kr`) and sends a **Discord** message the moment a product
 flips from sold-out (품절) to purchasable (구매 가능).
