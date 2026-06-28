@@ -103,12 +103,13 @@ func (m *Monitor) checkProduct(ctx context.Context, p config.Product) {
 
 func (m *Monitor) handleAvailable(ctx context.Context, p config.Product, url string, st state.ProductState, now time.Time) {
 	wasAvailable := st.Status == store.Available.String()
+	mention := p.MentionString(m.cfg.Mention)
 
 	switch {
 	case !wasAvailable:
 		// sold-out/unknown -> available: the alert we exist to send.
 		m.log.Info("AVAILABLE", "product", p.Name, "url", url)
-		m.notify(ctx, notifier.FormatAvailable(m.cfg.Mention, p.Name, url))
+		m.notify(ctx, notifier.FormatAvailable(mention, p.Name, url))
 		m.save(p.Slug, state.ProductState{
 			Status:         store.Available.String(),
 			LastChangeUnix: now.Unix(),
@@ -117,7 +118,7 @@ func (m *Monitor) handleAvailable(ctx context.Context, p config.Product, url str
 	case m.cfg.RenotifyAfter > 0 && now.Sub(time.Unix(st.LastNotifyUnix, 0)) >= m.cfg.RenotifyAfter:
 		// Still available after the renotify window.
 		m.log.Info("still available (renotify)", "product", p.Name)
-		m.notify(ctx, notifier.FormatAvailable(m.cfg.Mention, p.Name, url))
+		m.notify(ctx, notifier.FormatAvailable(mention, p.Name, url))
 		st.LastNotifyUnix = now.Unix()
 		m.save(p.Slug, st)
 	}

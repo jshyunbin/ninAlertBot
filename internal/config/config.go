@@ -14,6 +14,19 @@ import (
 type Product struct {
 	Name string `yaml:"name"`
 	Slug string `yaml:"slug"`
+	// Mentions, if set, overrides the global Mention for this product. Each
+	// entry is a Discord mention token, e.g. "<@123>" (user) or "<@&456>" (role).
+	Mentions []string `yaml:"mentions"`
+}
+
+// MentionString returns the mention text to prepend to this product's alerts:
+// the product's own mentions joined by spaces, or globalDefault when the
+// product has none.
+func (p Product) MentionString(globalDefault string) string {
+	if len(p.Mentions) > 0 {
+		return strings.Join(p.Mentions, " ")
+	}
+	return globalDefault
 }
 
 // Config is the full application configuration.

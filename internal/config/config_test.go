@@ -46,6 +46,28 @@ products:
 	}
 }
 
+func TestParsePerProductMentions(t *testing.T) {
+	cfg, err := Parse([]byte(`
+discord_webhook_url: "https://x"
+mention: "@here"
+products:
+  - name: "A only"
+    slug: "s1"
+    mentions: ["<@111>", "<@222>"]
+  - name: "Default"
+    slug: "s2"
+`))
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if got, want := cfg.Products[0].MentionString(cfg.Mention), "<@111> <@222>"; got != want {
+		t.Errorf("Products[0].MentionString() = %q, want %q", got, want)
+	}
+	if got, want := cfg.Products[1].MentionString(cfg.Mention), "@here"; got != want {
+		t.Errorf("Products[1].MentionString() = %q, want %q (global fallback)", got, want)
+	}
+}
+
 func TestParseInvalid(t *testing.T) {
 	cases := map[string]string{
 		"missing webhook": `

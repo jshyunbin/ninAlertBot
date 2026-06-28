@@ -88,12 +88,40 @@ See [`config.example.yaml`](config.example.yaml). Key fields:
 |---------------------------|---------|------------------------------------------------------|
 | `discord_webhook_url`     | —       | Required. Your Discord incoming webhook (https).     |
 | `interval`                | `60s`   | Poll cadence, jittered ±20%. Minimum `10s`.          |
-| `mention`                 | —       | Prepended to alerts, e.g. `@here` or `<@USER_ID>`.   |
+| `mention`                 | —       | Default mention, used when a product has no `mentions`. E.g. `@here` or `<@USER_ID>`. |
 | `renotify_after`          | `0s`    | Re-ping if still available after this long. 0 = once.|
 | `notify_on_scraper_break` | `false` | Diagnostic alert if a page can't be parsed.          |
 | `products[].name` / `.slug` | —     | Display name and URL slug per product.               |
+| `products[].mentions`     | —       | Optional. Per-product mention list that **replaces** the global `mention` for that product. |
 
 State is stored in `state.json` next to the binary (override with `-state`).
+
+> **Note:** alert messages are sent in **Korean** (e.g. "🟢 **Nintendo Switch 2**
+> 지금 구매 가능합니다!").
+
+### Per-product targeting
+
+Ping different people for different products with a `mentions` list on each
+product. It accepts user IDs (`<@123>`) and/or role IDs (`<@&456>`), and when
+present it overrides the global `mention` for that product only:
+
+```yaml
+mention: "@here"            # default for products without their own list
+products:
+  - name: "Nintendo Switch 2"
+    slug: "beeskb6aakor"
+    mentions: ["<@B_USER_ID>"]                 # B watches the Switch 2
+  - name: "Nintendo Switch 2 + Pokémon Pokopia Set"
+    slug: "beeskb6nfkor"
+    mentions: ["<@A_USER_ID>"]                 # A watches the bundles
+  - name: "Nintendo Switch 2 + Mario Kart World Set"
+    slug: "beeskb6nakor"
+    mentions: ["<@A_USER_ID>"]
+```
+
+To get a user ID: enable **Developer Mode** (Discord Settings → Advanced), then
+right-click a user → **Copy User ID**. Multiple recipients: list several, e.g.
+`mentions: ["<@A>", "<@B>"]`.
 
 ## Development
 

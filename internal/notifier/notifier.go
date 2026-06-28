@@ -82,13 +82,13 @@ func FormatAvailable(mention, name, url string) string {
 		b.WriteString(m)
 		b.WriteString(" ")
 	}
-	fmt.Fprintf(&b, "🟢 **%s** is now available to buy!\n%s", name, url)
+	fmt.Fprintf(&b, "🟢 **%s** 지금 구매 가능합니다!\n%s", name, url)
 	return b.String()
 }
 
 // FormatScraperBreak builds the diagnostic alert text when a page can no longer
 // be parsed (likely a layout change).
 func FormatScraperBreak(name, url string) string {
-	return fmt.Sprintf("⚠️ ninAlertBot could not read the stock status for **%s**. "+
-		"The page layout may have changed — check the scraper.\n%s", name, url)
+	return fmt.Sprintf("⚠️ ninAlertBot이 **%s**의 재고 상태를 읽지 못했습니다. "+
+		"페이지 구조가 변경되었을 수 있으니 스크래퍼를 확인하세요.\n%s", name, url)
 }

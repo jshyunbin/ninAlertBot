@@ -91,12 +91,40 @@ nssm start ninAlertBot
 |---------------------------|---------|-------------------------------------------------------|
 | `discord_webhook_url`     | —       | 필수. 디스코드 수신 웹훅 (https).                     |
 | `interval`                | `60s`   | 확인 주기, ±20% 무작위 편차. 최소 `10s`.              |
-| `mention`                 | —       | 알림 앞에 붙는 멘션, 예: `@here` 또는 `<@USER_ID>`.   |
+| `mention`                 | —       | 기본 멘션. 상품에 `mentions`가 없을 때 사용. 예: `@here` 또는 `<@USER_ID>`. |
 | `renotify_after`          | `0s`    | 계속 구매 가능 시 이 시간 후 재알림. 0 = 한 번만.     |
 | `notify_on_scraper_break` | `false` | 페이지 파싱 실패 시 진단용 알림 발송.                 |
 | `products[].name` / `.slug` | —     | 상품의 표시 이름과 URL 슬러그.                        |
+| `products[].mentions`     | —       | 선택. 해당 상품에 한해 전역 `mention`을 **대체**하는 멘션 목록. |
 
 상태는 실행 파일 옆 `state.json`에 저장됩니다 (`-state`로 경로 변경 가능).
+
+> **참고:** 알림 메시지는 **한국어**로 전송됩니다 (예: "🟢 **Nintendo Switch 2**
+> 지금 구매 가능합니다!").
+
+### 상품별 멘션 타게팅
+
+각 상품에 `mentions` 목록을 지정해 상품마다 다른 사람을 호출할 수 있습니다.
+사용자 ID(`<@123>`)와 역할 ID(`<@&456>`)를 모두 받을 수 있으며, 지정되면 해당
+상품에 한해 전역 `mention`을 덮어씁니다:
+
+```yaml
+mention: "@here"            # mentions가 없는 상품의 기본값
+products:
+  - name: "Nintendo Switch 2"
+    slug: "beeskb6aakor"
+    mentions: ["<@B_USER_ID>"]                 # B는 Switch 2만 알림
+  - name: "Nintendo Switch 2 + 포켓몬 포코피아 세트"
+    slug: "beeskb6nfkor"
+    mentions: ["<@A_USER_ID>"]                 # A는 번들 알림
+  - name: "Nintendo Switch 2 + 마리오카트 월드 세트"
+    slug: "beeskb6nakor"
+    mentions: ["<@A_USER_ID>"]
+```
+
+사용자 ID를 얻으려면: 디스코드 **설정 → 고급 → 개발자 모드**를 켠 뒤, 사용자를
+우클릭 → **사용자 ID 복사**. 여러 명을 호출하려면 여러 개를 나열하세요, 예:
+`mentions: ["<@A>", "<@B>"]`.
 
 ## 개발
 

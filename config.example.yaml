@@ -7,7 +7,8 @@ discord_webhook_url: "https://discord.com/api/webhooks/XXXXXXXX/YYYYYYYY"
 # Poll cadence (jittered ±20%). Minimum 10s. 60s is polite and plenty fast.
 interval: 60s
 
-# Optional. Prepended to every alert so it pings you.
+# Optional. Default mention, prepended to a product's alert when that product
+# has no "mentions" list of its own (see below). Pings whoever it names.
 #   "@here"  -> everyone currently online
 #   "@everyone"
 #   "<@123456789012345678>"        -> a specific user ID
@@ -24,10 +25,21 @@ notify_on_scraper_break: true
 
 # The products to watch. Add or remove freely. The slug is the last path segment
 # of the product URL: https://store.nintendo.co.kr/<slug>
+#
+# Each product may set its own "mentions" list to ping specific people for that
+# product only. When present it REPLACES the global "mention" above for that
+# product; when omitted, the global "mention" is used. List user IDs (<@ID>)
+# and/or role IDs (<@&ID>). To get a user ID: enable Developer Mode in Discord
+# (Settings -> Advanced), then right-click a user -> Copy User ID.
+#
+# Example below: user B watches only the Switch 2; user A watches both bundles.
 products:
   - name: "Nintendo Switch 2"
     slug: "beeskb6aakor"
+    mentions: ["<@B_USER_ID>"]
   - name: "Nintendo Switch 2 + Pokémon Pokopia Set"
     slug: "beeskb6nfkor"
-  # - name: "Nintendo Switch 2 + Mario Kart World Set"
-  #   slug: "beeskb6nakor"
+    mentions: ["<@A_USER_ID>"]
+  - name: "Nintendo Switch 2 + Mario Kart World Set"
+    slug: "beeskb6nakor"
+    mentions: ["<@A_USER_ID>"]

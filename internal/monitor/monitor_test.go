@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -93,6 +94,29 @@ func TestFiresOnceOnTransitionToAvailable(t *testing.T) {
 	m.RunOnce(context.Background()) // still available -> no extra alert
 	if n.count() != 1 {
 		t.Fatalf("after still-available: %d alerts, want 1", n.count())
+	}
+}
+
+func TestUsesPerProductMention(t *testing.T) {
+	cfg := baseConfig()
+	cfg.Mention = "@here"
+	cfg.Products = []config.Product{{Name: "Switch 2", Slug: "s1", Mentions: []string{"<@999>"}}}
+	ck := &fakeChecker{seq: []store.Status{store.Available}}
+	n := &capturingNotifier{}
+	m := newTestMonitor(t, cfg, ck, n, newMemStore())
+
+	m.RunOnce(context.Background())
+	if n.count() != 1 {
+		t.Fatalf("got %d alerts, want 1", n.count())
+	}
+	n.mu.Lock()
+	msg := n.calls[0]
+	n.mu.Unlock()
+	if !strings.HasPrefix(msg, "<@999> ") {
+		t.Errorf("alert should use per-product mention, got %q", msg)
+	}
+	if strings.Contains(msg, "@here") {
+		t.Errorf("alert should not fall back to global mention, got %q", msg)
 	}
 }
 
